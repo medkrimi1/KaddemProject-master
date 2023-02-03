@@ -1,16 +1,22 @@
 package sources.kaddemproject.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.Data;
 
-@Table( name = "detailEquipe")
+import javax.persistence.*;
+
+@Table(name = "detailEquipe")
 @Entity
+@Data
 public class DetailEquipe {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idDetailEquipe;
     private int salle;
     private String thematique;
+
+    @OneToOne
+    @JoinColumn(name = "equipe_id", referencedColumnName = "idEquipe")
+    private Equipe equipe;
 
 }
