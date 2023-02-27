@@ -1,6 +1,7 @@
 package tn.tecos.team.kademproject.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.tecos.team.kademproject.entities.Departement;
 import tn.tecos.team.kademproject.services.IDepartementServices;

@@ -1,5 +1,6 @@
 package tn.tecos.team.kademproject.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,6 +23,6 @@ public class Equipe {
     @OneToOne(mappedBy = "equipe")
     DetailEquipe detailEquipe;
     @ManyToMany
-    List<Etudiant> etudiant;
-
+    @JsonIgnore
+    List<Etudiant> attribut_etudiant_classeequipe;
 }

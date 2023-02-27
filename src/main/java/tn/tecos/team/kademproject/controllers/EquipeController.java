@@ -9,30 +9,29 @@ import tn.tecos.team.kademproject.services.IEquipeServices;
 import java.util.List;
 
 @RestController
-@RequestMapping("equipe")
+@RequestMapping("etudiant")
 @RequiredArgsConstructor
-public class EquipeController {
-    @Autowired
-    private final IEquipeServices iEquipeServices;
+public class EtudiantController {
+
+    private final IEtudiantServices iEtudiantServices;
     @GetMapping()
-    public List<Equipe> getAllEquipe(){
-        return iEquipeServices.getAllEquipe();
+    public List<Etudiant> getAll(){
+        return iEtudiantServices.getAll();
     }
     @GetMapping("{id}")
-    public Equipe getByIdEquipe(@PathVariable int id){
-        return iEquipeServices.getByIdEquipe(id);
-    }
-    @DeleteMapping("{id}")
-    private void deleteEquipe(@PathVariable int id){
-        iEquipeServices.deleteEquipe(id);
+    public Etudiant getById(@PathVariable int id){
+        return iEtudiantServices.getById(id);
     }
     @PostMapping()
-    public void ajouterEquipe(@RequestBody Equipe equipe){
-        iEquipeServices.ajouterEquipe(equipe);
+    public void ajouterEtudiant(@RequestBody Etudiant e){
+        iEtudiantServices.ajouterEtudiant(e);
     }
-    @PutMapping()
-    private Equipe updateEquipe(@RequestBody Equipe equipe){
-        iEquipeServices.updateEquipe(equipe);
-        return equipe;
+    @PutMapping("{etudiantId}/{departementId}")
+    public void assignEtudiantToDepartement(@PathVariable Integer etudiantId,@PathVariable Integer departementId){
+        iEtudiantServices.assignEtudiantToDepartement(etudiantId,departementId);
+    }
+    @PostMapping("{idContrat}/{idEquipe}")
+    public Etudiant addAndAssignEtudiantToEquipeAndContract(@RequestBody Etudiant e,@PathVariable Integer idContrat,@PathVariable Integer idEquipe) {
+        return iEtudiantServices.addAndAssignEtudiantToEquipeAndContract(e,idContrat,idEquipe);
     }
 }
