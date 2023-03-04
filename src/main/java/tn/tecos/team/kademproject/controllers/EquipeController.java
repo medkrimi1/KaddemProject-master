@@ -29,6 +29,7 @@ public class EtudiantController {
     @PutMapping("{etudiantId}/{departementId}")
     public void assignEtudiantToDepartement(@PathVariable Integer etudiantId,@PathVariable Integer departementId){
         iEtudiantServices.assignEtudiantToDepartement(etudiantId,departementId);
+
     }
     @PostMapping("{idContrat}/{idEquipe}")
     public Etudiant addAndAssignEtudiantToEquipeAndContract(@RequestBody Etudiant e,@PathVariable Integer idContrat,@PathVariable Integer idEquipe) {
