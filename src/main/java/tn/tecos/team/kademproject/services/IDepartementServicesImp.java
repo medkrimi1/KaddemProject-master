@@ -35,4 +35,8 @@ public class IDepartementServicesImp implements IDepartementServices{
     public void deleteDepartement(Integer id) {
         departementRepository.deleteById(id);
     }
+    public List<Departement> retrieveDepartementsByUniversite(Integer idUniversite) {
+        University Universite = universityrepository.findById(idUniversite).orElse(null);
+        return universite.getDepartement();
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tn.tecos.team.kademproject.entities.Contrat;
 import tn.tecos.team.kademproject.repositories.ContratRepository;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,5 +37,10 @@ public class IContratServicesImp implements IContratServices{
         public void deleteContrat(Integer id) {
             contratRepository.deleteById(id);
         }
+    @Override
+    public Integer nbContratsValides(Date startDate, Date endDate) {
+        List<Contrat> contrats = contratRepository.findContratByDateDebutContratGreaterThanEqualAndDateFinContratLessThanEqualAndArchiveFalse(startDate,endDate);
+        return contrats.size();
+    }
 
 }
