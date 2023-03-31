@@ -1,22 +1,25 @@
 package tn.tecos.team.kademproject.entities;
 
-import lombok.*;
+
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Entity
+@Table(name = "universite")
+@Data
 public class Universite {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
     @Id
-    private int idUniv;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idUniv", nullable = false)
+    private Integer idUniv;
+
+    @Column(name = "nomUniv")
     private String nomUniv;
-    @OneToMany
-    List<Departement> departement;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Department> departments;
+
 }

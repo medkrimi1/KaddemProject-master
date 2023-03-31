@@ -1,94 +1,95 @@
-package tn.tecos.team.kademproject.services;
+package tn.tecos.team.kademproject.services.servicesImpl;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import tn.tecos.team.kademproject.entities.Contrat;
-import tn.tecos.team.kademproject.entities.Departement;
+import tn.tecos.team.kademproject.entities.Department;
 import tn.tecos.team.kademproject.entities.Equipe;
 import tn.tecos.team.kademproject.entities.Etudiant;
-import tn.tecos.team.kademproject.repositories.ContratRepository;
-import tn.tecos.team.kademproject.repositories.DepartementRepository;
-import tn.tecos.team.kademproject.repositories.EquipeRepository;
 import tn.tecos.team.kademproject.repositories.EtudiantRepository;
+import tn.tecos.team.kademproject.services.ContratService;
+import tn.tecos.team.kademproject.services.DepartmentService;
+import tn.tecos.team.kademproject.services.EquipeService;
+import tn.tecos.team.kademproject.services.EtudiantService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IEtudiantServicesImp implements IEtudiantServices {
+public class EtudiantImpl implements EtudiantService {
 
     private final EtudiantRepository etudiantRepository;
-    private final DepartementRepository departementRepository;
-    private final ContratRepository contratRepository;
-    private final EquipeRepository equipeRepository;
-    @Override
-    public void ajouterEtudiant(Etudiant e) {
-        etudiantRepository.save(e);
+    private final DepartmentService departmentService;
+    private final ContratService contratService;
+    private final EquipeService equipeService;
+
+    public EtudiantImpl(EtudiantRepository etudiantRepository,
+                        DepartmentService departmentService,
+                        ContratService contratService,
+                        EquipeService equipeService) {
+        this.etudiantRepository = etudiantRepository;
+        this.departmentService = departmentService;
+        this.contratService = contratService;
+        this.equipeService = equipeService;
     }
 
     @Override
-    public void updateEtudiant(Etudiant e) {
-        etudiantRepository.save(e);
-    }
-
-    @Override
-    public List<Etudiant> getAll() {
+    public List<Etudiant> retrieveAllEtudiants() {
         return etudiantRepository.findAll();
     }
 
     @Override
-    public Etudiant getById(int id) {
-        return etudiantRepository.findById(id).orElse(null);
-
+    public Etudiant addEtudiant(Etudiant e) {
+        return etudiantRepository.save(e);
     }
 
     @Override
-    public void deleteEtudiant(int id) {
-        etudiantRepository.deleteById(id);
+    public Etudiant updateEtudiant(Etudiant e) {
+        return etudiantRepository.save(e);
+    }
+
+    @Override
+    public Optional<Etudiant> retrieveEtudiant(Integer idEtudiant) {
+        return etudiantRepository.findById(idEtudiant);
+    }
+
+    @Override
+    public void removeEtudiant(Integer idEtudiant) {
+        etudiantRepository.deleteById(idEtudiant);
+    }
+
+    @Override
+    public Optional<Etudiant> getByNamePrenom(String name, String prenom) {
+        return etudiantRepository.findByNomAndPrenom(name, prenom);
     }
 
     @Override
     public void assignEtudiantToDepartement(Integer etudiantId, Integer departementId) {
-        //récupération des objets
-        // Etudiant etudiant = this.getById(etudiantId);
-        Etudiant etudiant = etudiantRepository.findById(etudiantId).orElse(null);
-        Departement departement = departementRepository.findById(departementId).orElse(null);
-
-        //vérification des objets
-        // if ((etudiant!=null) && (departement!=null)) {
-        //ou
-        Assert.notNull(etudiant, "etudiant must not be null.");
-        Assert.notNull(departement, "departement must not be null.");
-        //traitement
-        etudiant.setDepartement(departement);
-        //departement.getEtu().add(etudiant);
-        //saving
-        etudiantRepository.save(etudiant);
-
+        Etudiant e = retrieveEtudiant(etudiantId).orElse(null);
+        Department d = departmentService.retrieveDepartement(departementId).orElse(null);
+        if (e != null && d != null){
+            e.setDepartment(d);
+            this.updateEtudiant(e);
+        }
     }
 
     @Override
-    @Transactional
     public Etudiant addAndAssignEtudiantToEquipeAndContract(Etudiant e, Integer idContrat, Integer idEquipe) {
-        Contrat contrat = contratRepository.findById(idContrat).orElse(null);
-        Equipe equipe = equipeRepository.findById(idEquipe).orElse(null);
-        Assert.notNull(e,"contrat must no be null");
-        Assert.notNull(e,"equipe must no be null");
-        //initialisation d'une liste 5ater un objet jdid ken je objet 9dim raw na3mlou getEquipes().add(equipe)
-        List<Equipe> equipes = new ArrayList<>();
-        equipes.add(equipe);
-        e.setEquipes(equipes);
-        etudiantRepository.saveAndFlush(e);
-        contrat.setEtudiant(e);
+        Etudiant savedEtudiant = addEtudiant(e);
+        Contrat c = contratService.retrieveContrat(idContrat).orElse(null);
+        Equipe equipe = equipeService.retrieveEquipe(idEquipe).orElse(null);
+        c.setEtudiant(savedEtudiant);
+        List<Etudiant> etudiants = equipe.getEtudiants();
+        etudiants.add(savedEtudiant);
+        equipe.setEtudiants(etudiants);
+        equipeService.updateEquipe(equipe);
+        contratService.updateContrat(c);
+        return savedEtudiant;
+    }
 
-        //puisque sta3melna transactional donc zayed bech na3mlou .save
-        //contratRepository.save(contrat);
-        return e;
-
+    @Override
+    public List<Etudiant> getEtudiantsByDepartement(Integer idDepartement) {
+        return etudiantRepository.findAllByDepartmentIdDpart(idDepartement);
     }
 }

@@ -1,38 +1,46 @@
 package tn.tecos.team.kademproject.controllers;
 
+import tn.tecos.team.kademproject.entities.Contrat;
+import tn.tecos.team.kademproject.entities.Equipe;
+import tn.tecos.team.kademproject.services.EquipeService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tn.tecos.team.kademproject.entities.Equipe;
-import tn.tecos.team.kademproject.services.IEquipeServices;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("etudiant")
 @RequiredArgsConstructor
-public class EtudiantController {
+@RequestMapping("/equipe")
+public class EquipeController {
 
-    private final IEtudiantServices iEtudiantServices;
-    @GetMapping()
-    public List<Etudiant> getAll(){
-        return iEtudiantServices.getAll();
-    }
-    @GetMapping("{id}")
-    public Etudiant getById(@PathVariable int id){
-        return iEtudiantServices.getById(id);
-    }
-    @PostMapping()
-    public void ajouterEtudiant(@RequestBody Etudiant e){
-        iEtudiantServices.ajouterEtudiant(e);
-    }
-    @PutMapping("{etudiantId}/{departementId}")
-    public void assignEtudiantToDepartement(@PathVariable Integer etudiantId,@PathVariable Integer departementId){
-        iEtudiantServices.assignEtudiantToDepartement(etudiantId,departementId);
 
+    private final EquipeService equipeService;
+    @GetMapping
+    public List<Equipe> getEquipes() {
+        return equipeService.retrieveAllEquipes();
     }
-    @PostMapping("{idContrat}/{idEquipe}")
-    public Etudiant addAndAssignEtudiantToEquipeAndContract(@RequestBody Etudiant e,@PathVariable Integer idContrat,@PathVariable Integer idEquipe) {
-        return iEtudiantServices.addAndAssignEtudiantToEquipeAndContract(e,idContrat,idEquipe);
+
+    @PostMapping
+    public Equipe addEquipe(@RequestBody Equipe e) {
+        return equipeService.addEquipe(e);
     }
+
+    @PutMapping
+    public Equipe updateEquipe (@RequestBody Equipe e) {
+        return equipeService.updateEquipe(e);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public void deleteEquipe (@PathVariable Integer id) {
+        equipeService.deleteEquipe(id);
+    }
+
+    @GetMapping(path = "/{id}")
+    public Equipe getById(@PathVariable Integer id) {
+        return equipeService.retrieveEquipe(id).orElse(null);
+    }
+
+
 }

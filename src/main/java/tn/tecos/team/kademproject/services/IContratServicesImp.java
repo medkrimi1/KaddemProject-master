@@ -54,10 +54,13 @@ public class ContratImpl implements ContratService {
 
     @Override
     public Contrat affectContratToEtudiant(Contrat ce, String nomE, String prenomE) {
-        Etudiant e = etudiantRepository.findByNomAndPrenom(nomE, prenomE).orElse(null);
-        Assert.notNull(e, "not null");
-        if (e.getContrats().stream().filter(Contrat::getArchive).count() > 5){
-            throw new RuntimeException("vous avez dépassé le limite des contrat");
+        Etudiant e = etudiantRepository.findByNomAndPrenom(nomE, prenomE)
+                .orElseThrow(() -> new RuntimeException("Etudiant not found"));
+        long nbContratsArchives = e.getContrats().stream()
+                .filter(Contrat::getArchive)
+                .count();
+        if (nbContratsArchives > 5) {
+            throw new RuntimeException("Vous avez dépassé le limite des contrats");
         }
         ce.setEtudiant(e);
         return updateContrat(ce);
@@ -65,28 +68,30 @@ public class ContratImpl implements ContratService {
 
     @Override
     public Integer nbContratsValides(Date startDate, Date endDate) {
-        return contratRepository.countByDateDebutContratGreaterThanEqualAndDateFinContratLessThanEqual(startDate,endDate);
+        return contratRepository.findAll().stream()
+                .filter(contrat -> !contrat.getArchive())
+                .filter(contrat -> validPeriod(contrat.getDateDebutContrat(), contrat.getDateFinContrat(), startDate, endDate))
+                .collect(Collectors.toList())
+                .size();
     }
-
-
-    public boolean validPeriod(Date contractStartDate, Date contractEndDate, Date startDate, Date endDate) {
-        return !startDate.before(contractStartDate) && !endDate.after(contractEndDate);
-    }
-
-
 
     @Override
     public Map<String, Integer> getMontantContartEntreDeuxDate(int idUniv, Date startDate, Date endDate) {
-        Universite u = universiteRepository.findById(idUniv).orElse(null);
-        Assert.notNull(u,"université not found");
+        Universite u = universiteRepository.findById(idUniv)
+                .orElseThrow(() -> new RuntimeException("Université not found"));
         return u.getDepartments().stream()
-                .flatMap(d -> d.getEtudiants().stream())
+                .flatMap(department -> department.getEtudiants().stream())
                 .flatMap(etudiant -> etudiant.getContrats().stream())
-                .filter(contrat -> !contrat.getArchive() && validPeriod(contrat.getDateDebutContrat(), contrat.getDateFinContrat(), startDate , endDate))
+                .filter(contrat -> !contrat.getArchive())
+                .filter(contrat -> validPeriod(contrat.getDateDebutContrat(), contrat.getDateFinContrat(), startDate, endDate))
                 .sorted(Comparator.comparing(contrat -> contrat.getSpecialite().toString()))
                 .collect(Collectors.groupingBy(
                         contrat -> contrat.getSpecialite().toString(),
                         Collectors.summingInt(Contrat::getMontantContrat)
                 ));
+    }
+
+    private boolean validPeriod(Date contractStartDate, Date contractEndDate, Date startDate, Date endDate) {
+        return !startDate.before(contractStartDate) && !endDate.after(contractEndDate);
     }
 }

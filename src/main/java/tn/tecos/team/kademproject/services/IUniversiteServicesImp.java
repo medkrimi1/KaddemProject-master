@@ -1,59 +1,52 @@
-package tn.tecos.team.kademproject.services;
+package com.esprit.kaddem.services.servicesImpl;
 
+import com.esprit.kaddem.entities.Department;
+import com.esprit.kaddem.entities.Universite;
+import com.esprit.kaddem.repositories.UniversiteRepository;
+import com.esprit.kaddem.services.DepartmentService;
+import com.esprit.kaddem.services.UniversiteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-import tn.tecos.team.kademproject.entities.Departement;
-import tn.tecos.team.kademproject.entities.Universite;
-import tn.tecos.team.kademproject.repositories.DepartementRepository;
-import tn.tecos.team.kademproject.repositories.UniversiteRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IUniversiteServicesImp implements IUniversiteServices {
-    private final UniversiteRepository universiteRepository;
+public class UniversiteImpl implements UniversiteService {
 
-    private final DepartementRepository departementRepository;
 
-    @Override
-    public void ajoutUniversite(Universite u) {
-        universiteRepository.save(u);
-    }
+    public final UniversiteRepository universiteRepository;
+    public final DepartmentService departmentService;
 
     @Override
-    public void updateUniversite(Universite u) {
-        universiteRepository.save(u);
-    }
-
-    @Override
-    public List<Universite> getAllUniversite() {
+    public List<Universite> retrieveAllUniversites() {
         return universiteRepository.findAll();
     }
 
     @Override
-    public Universite getByIdUniversite(Integer id) {
-        return universiteRepository.findById(id).orElse(null);
+    public Universite addUniversite(Universite u) {
+        return universiteRepository.save(u);
     }
 
     @Override
-    public void deleteUniversite(Integer id) {
-        universiteRepository.deleteById(id);
+    public Universite updateUniversite(Universite u) {
+        return universiteRepository.save(u);
     }
+
+    @Override
+    public Optional<Universite> retrieveUniversite(Integer idUniversite) {
+        return universiteRepository.findById(idUniversite);
+    }
+
     @Override
     public void assignUniversiteToDepartement(Integer idUniversite, Integer idDepartement) {
-        Universite universite = universiteRepository.findById(idUniversite).orElse(null);
-        Departement departement = departementRepository.findById(idDepartement).orElse(null);
-
-        // if ((universite!=null) && (departement!=null))
-        //ou
-        Assert.notNull(universite, "université must not be null.");
-        Assert.notNull(departement, "departement must not be null.");
-        universite.getDepartement().add(departement);
-        universiteRepository.save(universite);
-
-
+        Universite u = this.retrieveUniversite(idUniversite).orElse(null);
+        Department d =  departmentService.retrieveDepartement(idDepartement).orElse(null);
+        if (u!= null && d!= null ){
+            u.getDepartments().add(d);
+            updateUniversite(u);
+        }
     }
 }

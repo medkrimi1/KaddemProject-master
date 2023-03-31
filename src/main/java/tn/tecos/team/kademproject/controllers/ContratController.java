@@ -1,37 +1,44 @@
 package tn.tecos.team.kademproject.controllers;
+
+import tn.tecos.team.kademproject.entities.Contrat;
+import tn.tecos.team.kademproject.entities.Equipe;
+import tn.tecos.team.kademproject.services.ContratService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tn.tecos.team.kademproject.entities.Contrat;
-import tn.tecos.team.kademproject.services.IContratServices;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("contrat")
 @RequiredArgsConstructor
-public class ContratController {
-    private final IContratServices iContratServices;
+@RequestMapping("/contract")
+public class ContractController {
 
-    @GetMapping()
-    public List<Contrat> getAllContrat(){
-        return iContratServices.getAllContrat();
+
+    private final ContratService contratService;
+    @GetMapping
+    public List<Contrat> getAll() {
+        return contratService.retrieveAllContrats();
     }
-    @GetMapping("/{id}")
-    public Contrat getByIdContrat(@PathVariable int id){
-        return iContratServices.getByIdContrat(id);
+
+    @PostMapping
+    public Contrat add(@RequestBody Contrat e) {
+        return contratService.addContrat(e);
     }
-    @DeleteMapping("/{id}")
-    private void deleteContrat(@PathVariable int id){
-        iContratServices.deleteContrat(id);
+
+    @PutMapping
+    public Contrat update (@RequestBody Contrat e) {
+        return contratService.updateContrat(e);
     }
-    @PostMapping()
-    public void ajouterContrat(@RequestBody Contrat contrat){
-        iContratServices.ajouterContrat(contrat);
+
+    @DeleteMapping(path = "/{id}")
+    public void delete (@PathVariable Integer id) {
+        contratService.removeContrat(id);
     }
-    @PutMapping()
-    private Contrat updateContrat(@RequestBody Contrat contrat){
-        iContratServices.updateContrat(contrat);
-        return contrat;
+
+    @GetMapping(path = "/{id}")
+    public Contrat getById(@PathVariable Integer id) {
+        return contratService.retrieveContrat(id).orElse(null);
     }
+
 
 }

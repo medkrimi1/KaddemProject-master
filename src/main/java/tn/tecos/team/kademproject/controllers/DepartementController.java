@@ -1,38 +1,37 @@
 package tn.tecos.team.kademproject.controllers;
 
+import tn.tecos.team.kademproject.entities.Department;
+import tn.tecos.team.kademproject.services.DepartmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tn.tecos.team.kademproject.entities.Departement;
-import tn.tecos.team.kademproject.services.IDepartementServices;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("departement")
 @RequiredArgsConstructor
+@RequestMapping("/departement")
 public class DepartementController {
-    private final IDepartementServices iDepartementServices;
 
-    @GetMapping()
-    public List<Departement> getAllDepartement(){
-        return iDepartementServices.getAllDepartement();
+
+    private final DepartmentService departmentService;
+    @GetMapping
+    public List<Department> getAll() {
+        return departmentService.retrieveAllDepartements();
     }
-    @GetMapping("{id}")
-    public Departement getByIdDepartement(@PathVariable int id){
-        return iDepartementServices.getByIdDepartement(id);
+
+    @PostMapping
+    public Department add(@RequestBody Department e) {
+        return departmentService.addDepartement(e);
     }
-    @DeleteMapping("{id}")
-    private void deleteDepartement(@PathVariable int id){
-        iDepartementServices.deleteDepartement(id);
+
+    @PutMapping
+    public Department update (@RequestBody Department e) {
+        return departmentService.updateDepartement(e);
     }
-    @PostMapping()
-    public void ajouterDepartement(@RequestBody Departement departement){
-        iDepartementServices.ajouterDepartement(departement);
+
+    @GetMapping(path = "/{id}")
+    public Department getById (@PathVariable Integer id) {
+        return departmentService.retrieveDepartement(id).orElse(null);
     }
-    @PutMapping()
-    private Departement updateDepartement(@RequestBody Departement departement){
-        iDepartementServices.updateDepartement(departement);
-        return departement;
-    }
+
 }

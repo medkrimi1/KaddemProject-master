@@ -1,42 +1,45 @@
-package tn.tecos.team.kademproject.services;
+package tn.tecos.team.kademproject.services.servicesImpl;
 
-import lombok.RequiredArgsConstructor;
+import tn.tecos.team.kademproject.entities.Department;
+import tn.tecos.team.kademproject.repositories.DepartmentRepository;
+import tn.tecos.team.kademproject.services.DepartmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.tecos.team.kademproject.entities.Departement;
-import tn.tecos.team.kademproject.repositories.DepartementRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
-@RequiredArgsConstructor
-public class IDepartementServicesImp implements IDepartementServices{
-    private final DepartementRepository departementRepository;
+public class DepartmentImpl implements DepartmentService {
+
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
     @Override
-    public void ajouterDepartement(Departement d) {
-        departementRepository.save(d);
+    public List<Department> retrieveAllDepartements() {
+        return departmentRepository.findAll();
     }
 
     @Override
-    public void updateDepartement(Departement d) {
-        departementRepository.save(d);
+    public Department addDepartement(Department d) {
+        return departmentRepository.save(d);
     }
 
     @Override
-    public List<Departement> getAllDepartement() {
-        return departementRepository.findAll();
+    public Department updateDepartement(Department d) {
+        return departmentRepository.save(d);
     }
 
     @Override
-    public Departement getByIdDepartement(Integer id) {
-        return departementRepository.findById(id).orElse(null);
+    public Optional<Department> retrieveDepartement(Integer idDepart) {
+        return departmentRepository.findById(idDepart);
     }
 
     @Override
-    public void deleteDepartement(Integer id) {
-        departementRepository.deleteById(id);
-    }
-    public List<Departement> retrieveDepartementsByUniversite(Integer idUniversite) {
-        University Universite = universityrepository.findById(idUniversite).orElse(null);
-        return universite.getDepartement();
+    public List<Department> retrieveDepartementsByUniversite(Integer idUniversite) {
+        return new ArrayList<>();
     }
 }

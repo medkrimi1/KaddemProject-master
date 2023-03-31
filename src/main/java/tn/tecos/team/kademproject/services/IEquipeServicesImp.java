@@ -1,40 +1,44 @@
-package tn.tecos.team.kademproject.services;
+package tn.tecos.team.kademproject.services.servicesImpl;
 
-import lombok.RequiredArgsConstructor;
+import tn.tecos.team.kademproject.entities.Equipe;
+import tn.tecos.team.kademproject.repositories.EquipeRepository;
+import tn.tecos.team.kademproject.services.EquipeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tn.tecos.team.kademproject.repositories.EquipeRepository;
-import tn.tecos.team.kademproject.entities.Equipe;
-
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class IEquipeServicesImp implements IEquipeServices{
+public class EquipeImpl implements EquipeService {
 
-    private final EquipeRepository equipeRepository;
-    @Override
-    public void ajouterEquipe(Equipe e) {
-        equipeRepository.save(e);
-    }
+
+    @Autowired
+    EquipeRepository equipeRepository;
 
     @Override
-    public void updateEquipe(Equipe e) {
-        equipeRepository.save(e);
-    }
-
-    @Override
-    public List<Equipe> getAllEquipe() {
+    public List<Equipe> retrieveAllEquipes() {
         return equipeRepository.findAll();
     }
 
     @Override
-    public Equipe getByIdEquipe(Integer id) {
-        return equipeRepository.findById(id).orElse(null);
+    public Equipe addEquipe(Equipe e) {
+        return equipeRepository.save(e);
     }
 
     @Override
-    public void deleteEquipe(Integer id) {
-        equipeRepository.deleteById(id);
+    public Equipe updateEquipe(Equipe e) {
+        return equipeRepository.save(e);
     }
+
+    @Override
+    public Optional<Equipe> retrieveEquipe(Integer idEquipe) {
+        return equipeRepository.findById(idEquipe);
+    }
+
+    @Override
+    public void deleteEquipe(Integer idEquipe) {
+        equipeRepository.deleteById(idEquipe);
+    }
+
 }
