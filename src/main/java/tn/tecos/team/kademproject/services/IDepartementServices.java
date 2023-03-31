@@ -1,14 +1,19 @@
 package tn.tecos.team.kademproject.services;
 
-import tn.tecos.team.kademproject.entities.Departement;
+import tn.tecos.team.kademproject.entities.Department;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface IDepartementServices {
-    void ajouterDepartement(Departement d);
-    void updateDepartement(Departement d);
-    List<Departement> getAllDepartement();
-    Departement getByIdDepartement(Integer id);
-    void deleteDepartement(Integer id);
-    public List<Departement> retrieveDepartementsByUniversite(Integer idUniversite) ;
+
+public interface DepartmentService {
+    List<Department> retrieveAllDepartements();
+
+    Department addDepartement (Department d);
+
+    Department updateDepartement (Department d);
+
+    Optional<Department> retrieveDepartement (Integer idDepart);
+
+    public List<Department> retrieveDepartementsByUniversite(Integer idUniversite);
 }
